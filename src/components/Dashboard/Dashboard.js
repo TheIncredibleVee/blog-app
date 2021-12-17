@@ -11,7 +11,7 @@ import {UserContext} from '../../context/userContext';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs,  doc, setDoc} from 'firebase/firestore';
-
+import {PathContext} from '../../context/pathContext';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDSkfkLyQIGW-lR4JuYBg2F2S6XB2cc1Ts",
@@ -34,7 +34,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const {user, isLoggedIn} = useContext(UserContext);
     
-
+    const {path, setPath}= useContext(PathContext);
     const [loading, setLoading] =useState(true);
     const [posts, setPosts] = useState([{heading: '', body: '',desc:'', authorImage: '', authorName:'', mini:'',image:'', date:''}]);
     const [localPost,setLocalPost] =useState(false);
@@ -76,6 +76,7 @@ const Dashboard = () => {
 
       if(!isLoggedIn){  
         navigate('/login');
+        setPath('/login');
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
