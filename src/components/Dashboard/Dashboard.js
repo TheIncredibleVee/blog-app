@@ -10,7 +10,7 @@ import Card1by3 from '../../components/Card1by3/Card1by3';
 import {UserContext} from '../../context/userContext';
 import { useNavigate } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, setDoc} from 'firebase/firestore';
+import { getFirestore, collection, getDocs,  doc, setDoc} from 'firebase/firestore';
 
 
 const firebaseConfig = {
@@ -39,7 +39,7 @@ const Dashboard = () => {
     const [posts, setPosts] = useState([{heading: '', body: '',desc:'', authorImage: '', authorName:'', mini:'',image:'', date:''}]);
     const [localPost,setLocalPost] =useState(false);
     const mainCat=['Getting Started', 'Crypto', 'ML'];
-    const [postData, setPostData] = useState({heading: '', body: '',desc:'',authorName:user?user.displayName:'', authorImage: user?user.photoURL:'',mini:'',image:'', id:posts.length, date:'2021-12-17',category:''});
+    const [postData, setPostData] = useState({heading: '', body: '',desc:'',authorName:user?user.displayName:'', authorImage: user?user.photoURL:'',mini:'',image:'', date:'2021-12-17',category:''});
 
 
 
@@ -77,6 +77,7 @@ const Dashboard = () => {
       if(!isLoggedIn){  
         navigate('/login');
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function handleConflict(e) {
@@ -97,9 +98,13 @@ const Dashboard = () => {
     const handleSubmit = async(e) => {
         e.preventDefault();
         postData.mini='10 min';
-        const id= currentId?currentId:posts.length+1;
+        const idNew= currentId?currentId:posts.length+1;
+        let temp= postData;
+        postData.id=idNew;
+        await setPostData({...postData, id:idNew});
+        console.log({pId:postData.id, cId:idNew});
         //await updateDoc(doc(db,'posts'), {mini:'2 min'});
-        await setDoc(doc(db, "posts", `${id}`), postData); 
+        await setDoc(doc(db, "posts", `${idNew}`), postData); 
         //console.log("Document written with ID: ", docRef.id);
         const p= await fetchData();
         setPosts(p);
@@ -110,96 +115,102 @@ const Dashboard = () => {
 
     const handleCard=(e, id)=>{
       setCurrentId(id);
+      console.log(currentId);
       const temp= userPosts.find(post => post.id === id);
       setPostData({...postData, category:temp.category, heading:temp.heading, body:temp.body,desc:temp.desc,authorName:temp.authorName, authorImage:temp.authorImage,mini:temp.mini,image:temp.image, id:temp.id, date:temp.date});
     }
-    return (
-        <>
-        <div className="grid grid-cols-4 gap-3">
-        <div className=" col-span-3 bg-gray-200 font-sans leading-normal tracking-normal">
-        <div className="container px-4 md:px-0 max-w-6xl mx-auto pt-10">
-          <div className="mx-0 sm:mx-6">
-            
-            
-            <div className="bg-gray-200 w-full text-xl md:text-2xl text-gray-800 leading-normal rounded-t">
+    if(!loading)
+      return (
+          <>
+          <div className="grid grid-cols-4 gap-3">
+          <div className=" col-span-3 bg-gray-200 font-sans leading-normal tracking-normal">
+          <div className="container px-4 md:px-0 max-w-6xl mx-auto pt-10">
+            <div className="mx-0 sm:mx-6">
               
-              <div className="flex flex-wrap justify-between pt-12 -mx-6">
-                {userPosts.map((post, index) => {
-                    if(index===0){
-                      return(
-                        <div className="bg-gray-200 p-5 text-xl w-12/12 md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
-                          <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                        </div>
-                        
-                      )
-                    }
-                    else if(index %7===0 || index%7=== 1 || index%7===2 || index%7===3){
-                      if(index%7===1 &&index===userPosts.length-1){
+              
+              <div className="bg-gray-200 w-full text-xl md:text-2xl text-gray-800 leading-normal rounded-t">
+                
+                <div className="flex flex-wrap justify-between pt-12 -mx-6">
+                  {userPosts.map((post, index) => {
+                      if(index===0){
                         return(
-                          <div className="bg-gray-200 p-5 text-xl w-12/12 md:text-2xl text-gray-800 leading-normal rounded-t" onClick={(e)=>handleCard(e,post.id)} > 
+                          <div className="bg-gray-200 p-5 text-xl w-12/12 md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
                             <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                           </div>
-                          )
-                      }else
-                        return <Card1by3 onClick={(e)=>handleCard(e,post.id)} idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                    }
-                    else if(index%7===4 || index%7===5){
-                      if(index%7===4 &&index===userPosts.length-1){
-                        return(
-                          <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
-                            <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                          </div>
-                          )  
-                      }else
-                        return <Card1by2 onClick={(e)=>handleCard(e,post.id)} idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                    }
-                    else{
-                      if(index%7===6  && index===userPosts.length-1 ){
-                        return(
-                          <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
-                            <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                          </div>
-                          )  
-                      }else
-                        return <Card2by3 onClick={(e)=>handleCard(e,post.id)} idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
-                    }
-                })
-              }
-              </div>
-               </div>
+                          
+                        )
+                      }
+                      else if(index %7===0 || index%7=== 1 || index%7===2 || index%7===3){
+                        if(index%7===1 &&index===userPosts.length-1){
+                          return(
+                            <div className="bg-gray-200 p-5 text-xl w-12/12 md:text-2xl text-gray-800 leading-normal rounded-t" onClick={(e)=>handleCard(e,post.id)} > 
+                              <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            </div>
+                            )
+                        }else
+                          return <div onClick={(e)=>handleCard(e,post.id)}><Card1by3  idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/></div>
+                      }
+                      else if(index%7===4 || index%7===5){
+                        if(index%7===4 &&index===userPosts.length-1){
+                          return(
+                            <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
+                              <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            </div>
+                            )  
+                        }else
+                          return <div onClick={(e)=>handleCard(e,post.id)}><Card1by2 onClick={(e)=>handleCard(e,post.id)} idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/></div>
+                      }
+                      else{
+                        if(index%7===6  && index===userPosts.length-1 ){
+                          return(
+                            <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t"  onClick={(e)=>handleCard(e,post.id)}> 
+                              <LeadCard idx={-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            </div>
+                            )  
+                        }else
+                          return <div onClick={(e)=>handleCard(e,post.id)}><Card2by3 onClick={(e)=>handleCard(e,post.id)} idx={-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/></div>
+                      }
+                  })
+                }
+                </div>
+                  </div>
+            </div>
           </div>
         </div>
-      </div>
 
 
 
 
-        <Paper className={classes.paper}>
-        <div className="mt-20">      
-      <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-        <Typography variant="h6">{currentId && currentId<posts.length+1?`Editing the ${currentId}th post`:'Enter the data to be entered'}</Typography>
-        <TextField disabled={true} name="Name" variant="outlined" label="Name" fullWidth value={postData.authorName} onChange={(e) => setPostData({ ...postData, authorName: e.target.value })} />
-        <TextField disabled={true} name="Email" variant="outlined" label="Email" fullWidth value={postData.authorImage} onChange={(e) => setPostData({ ...postData, authorImage: e.target.value })} />
-        <TextField name="heading" variant="outlined" label="Heading" fullWidth value={postData.heading} onChange={(e) => setPostData({ ...postData, heading: e.target.value })} />
-        <TextField name="Body" variant="outlined" label="Body" fullWidth multiline rows={4} value={postData.body} onChange={(e) => setPostData({ ...postData, body: e.target.value })} />
-        <TextField name="Description" variant="outlined" label="Descrpition" fullWidth value={postData.desc} onChange={(e) => setPostData({ ...postData, desc: e.target.value })} />
-        <FormControl fullWidth>
-          <InputLabel>Main Category</InputLabel>  
-          <Select value={postData.category} onChange={(e) => setPostData({ ...postData, category: e.target.value })}>
-              {mainCat.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-          </Select>
-        </FormControl>
-        
-        <TextField name="Image Url" variant="outlined" label="Image Url" fullWidth value={postData.image} onChange={(e) => setPostData({ ...postData, image: e.target.value })} />
-        <Button className={classes.buttonSubmit} variant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
-        <Button variant="contained" color="secondary" size="small" onClick={clear} fullWidth>Clear</Button>
-      </form>
-      </div>
-    </Paper>
-       
-      </div>
-      </>
-    )
+          <Paper className={classes.paper}>
+          <div className="mt-20">      
+        <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
+          <Typography variant="h6">{currentId && currentId<posts.length+1?`Editing the ${currentId}th post`:'Enter the data to be entered'}</Typography>
+          <TextField disabled={true} name="Name" variant="outlined" label="Name" fullWidth value={postData.authorName} onChange={(e) => setPostData({ ...postData, authorName: e.target.value })} />
+          <TextField disabled={true} name="Email" variant="outlined" label="Email" fullWidth value={postData.authorImage} onChange={(e) => setPostData({ ...postData, authorImage: e.target.value })} />
+          <TextField name="heading" variant="outlined" label="Heading" fullWidth value={postData.heading} onChange={(e) => setPostData({ ...postData, heading: e.target.value })} />
+          <TextField name="Body" variant="outlined" label="Body" fullWidth multiline rows={4} value={postData.body} onChange={(e) => setPostData({ ...postData, body: e.target.value })} />
+          <TextField name="Description" variant="outlined" label="Descrpition" fullWidth value={postData.desc} onChange={(e) => setPostData({ ...postData, desc: e.target.value })} />
+          <FormControl fullWidth>
+            <InputLabel>Main Category</InputLabel>  
+            <Select value={postData.category} onChange={(e) => setPostData({ ...postData, category: e.target.value })}>
+                {mainCat.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+            </Select>
+          </FormControl>
+          
+          <TextField name="Image Url" variant="outlined" label="Image Url" fullWidth value={postData.image} onChange={(e) => setPostData({ ...postData, image: e.target.value })} />
+          <Button className={classes.buttonSubmit} variant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
+          <Button variant="contained" color="secondary" size="small" onClick={clear} fullWidth>Clear</Button>
+        </form>
+        </div>
+      </Paper>
+          
+        </div>
+        </>
+      )
+    else
+    return (
+      <div>Loading...</div>
+    );
 }
 
 export default Dashboard

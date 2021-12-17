@@ -7,7 +7,6 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Link
 } from "react-router-dom";  
 import Login from './components/Login/Login';
 import { Provider } from './context/userContext';
@@ -15,10 +14,11 @@ import BlogPost from './components/BlogPost/BlogPost';
 import Navbar from './components/Navbar/Navbar';
 import Dashboard from './components/Dashboard/Dashboard';
 import {ToastContainer} from 'react-toastify';
-
+import {PathProvider} from './context/pathContext';
 
 ReactDOM.render(
   <React.StrictMode>
+    <PathProvider>
     <Provider>
     <ToastContainer
       position="top-right"
@@ -42,6 +42,7 @@ ReactDOM.render(
       </Routes>
     </BrowserRouter>
     </Provider>
+    </PathProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

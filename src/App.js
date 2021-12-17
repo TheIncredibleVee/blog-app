@@ -29,7 +29,7 @@ const db = getFirestore(app);
 function App() {
 
 
-  const { user, isLoggedIn, authError, error, authErr, signIn } = useContext(UserContext);
+  const { user, isLoggedIn, authError, error } = useContext(UserContext);
   console.log({user, isLoggedIn, authError, error});
 
   const [loading, setLoading] =useState(true);
@@ -76,6 +76,7 @@ function App() {
       progress: undefined,
       theme:"colored",
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   async function handleConflict(e) {
     console.log(localPost);
@@ -107,31 +108,31 @@ function App() {
                       if(index%7===1 &&index===posts.length-1){
                         return(
                           <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t" >
-                            <LeadCard idx={index} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            <LeadCard idx={post.id-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                             </div>
                           )
                       }else
-                        return <Card1by3 idx={index} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                        return <Card1by3 idx={post.id-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                     }
                     else if(index%7===4 || index%7===5){
                       if(index%7===4 &&index===posts.length-1){
                         return(
                          <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t" > 
-                            <LeadCard idx={index} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            <LeadCard idx={post.id-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                           </div>
                           )  
                       }else
-                        return <Card1by2 idx={index} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                        return <Card1by2 idx={post.id-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                     }
                     else{
                       if(index%7===6  && index===posts.length-1 ){
                         return(
                           <div className="bg-gray-200 ml-5 mr-5 text-xl md:text-2xl text-gray-800 leading-normal rounded-t" > 
-                            <LeadCard idx={index} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                            <LeadCard idx={post.id-1} key ={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                           </div>
                           )  
                       }else
-                        return <Card2by3 idx={index} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
+                        return <Card2by3 idx={post.id-1} key={index} category= {post.category} heading={post.heading} desc={post.desc} authorName = {post.authorName} authorImage = {post.authorImage} mini ={post.mini} image={post.image}/>
                     }
                 })
               }

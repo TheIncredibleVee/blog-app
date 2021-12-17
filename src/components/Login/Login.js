@@ -5,11 +5,14 @@ import {UserContext} from '../../context/userContext';
 import { useNavigate } from "react-router-dom";
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {PathContext} from '../../context/pathContext';
+
 
 const Login= ()=> {
     const [nav, setNav]= useState(false);
     const auth = getAuth();
     const navigate = useNavigate();
+    const {path, setPath} =useContext(PathContext);
     const { user, isLoggedIn, authError, error, authErr, signIn } = useContext(UserContext);
     console.log({user, isLoggedIn, authError, error});
     const handleLogin = async(provider) => {
@@ -48,7 +51,9 @@ const Login= ()=> {
       if(isLoggedIn){
           console.log('logged in');
           navigate("/dashboard");
+          setPath('/dashboard');
       }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
 
@@ -56,7 +61,9 @@ const Login= ()=> {
         if(isLoggedIn && nav){
             console.log('logged in');
             navigate("/dashboard");
+            setPath('/dashboard');
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[isLoggedIn,nav]);
     return (
       
