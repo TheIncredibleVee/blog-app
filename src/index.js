@@ -3,10 +3,45 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";  
+import Login from './components/Login/Login';
+import { Provider } from './context/userContext';
+import BlogPost from './components/BlogPost/BlogPost';
+import Navbar from './components/Navbar/Navbar';
+import Dashboard from './components/Dashboard/Dashboard';
+import {ToastContainer} from 'react-toastify';
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider>
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme={'colored'}
+    />
+    <BrowserRouter>
+    <Navbar/>
+      <Routes>
+        <Route exact path="/" element={<App />}/>
+        <Route exact path="/login" element={<Login />}/>
+        <Route exact path="/post/:id" element={<BlogPost />}/>
+        <Route exact path="/dashboard" element={<Dashboard />}/>
+      </Routes>
+    </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
